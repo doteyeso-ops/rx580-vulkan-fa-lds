@@ -1,0 +1,46 @@
+[gpu-lock] SELF-TEST: spawning real process named llama-bench.exe
+[gpu-lock] self-test POSITIVE ok: detector sees live probe (winpid 1246448)
+[gpu-lock] self-test NEGATIVE ok: detector goes quiet when idle
+[gpu-lock] acquired by 1695 at 11:51:09
+[gpu-lock] SELF-TEST: spawning real process named llama-bench.exe
+[gpu-lock] self-test POSITIVE ok: detector sees live probe (winpid 669236)
+[gpu-lock] self-test NEGATIVE ok: detector goes quiet when idle
+[gpu-lock] acquired by 1695 at 11:51:15
+=== TASK BENCH 2026-09-27 11:51:15 ===
+config: ngl=20 t=8 ctx=4096 ngen=48 tag=smoke pairs=5
+=== PAIR 1 ===
+--- ctlA: start 11:51:15
+RESULT side=ctlA rc=0 wall=31s load=?s pp=?ms pp_tps=53.4 gen_tps=3.9 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlA
+--- ctlB: start 11:51:47
+RESULT side=ctlB rc=0 wall=31s load=?s pp=?ms pp_tps=53.6 gen_tps=3.3 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlB
+=== PAIR 2 ===
+--- ctlA: start 11:52:18
+RESULT side=ctlA rc=0 wall=33s load=?s pp=?ms pp_tps=55.0 gen_tps=3.7 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlA
+--- ctlB: start 11:52:53
+RESULT side=ctlB rc=0 wall=30s load=?s pp=?ms pp_tps=54.5 gen_tps=3.8 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlB
+=== PAIR 3 ===
+--- ctlA: start 11:53:23
+RESULT side=ctlA rc=0 wall=34s load=?s pp=?ms pp_tps=53.8 gen_tps=3.7 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlA
+--- ctlB: start 11:53:58
+RESULT side=ctlB rc=0 wall=31s load=?s pp=?ms pp_tps=54.0 gen_tps=3.7 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlB
+=== PAIR 4 ===
+--- ctlA: start 11:54:30
+RESULT side=ctlA rc=0 wall=32s load=?s pp=?ms pp_tps=53.8 gen_tps=3.5 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlA
+--- ctlB: start 11:55:03
+RESULT side=ctlB rc=0 wall=30s load=?s pp=?ms pp_tps=56.5 gen_tps=3.2 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlB
+=== PAIR 5 ===
+--- ctlA: start 11:55:34
+RESULT side=ctlA rc=0 wall=31s load=?s pp=?ms pp_tps=53.8 gen_tps=3.4 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlA
+--- ctlB: start 11:56:06
+RESULT side=ctlB rc=0 wall=30s load=?s pp=?ms pp_tps=56.3 gen_tps=3.7 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=ctlB
+=== TASK BENCH DONE 11:56:36 ===

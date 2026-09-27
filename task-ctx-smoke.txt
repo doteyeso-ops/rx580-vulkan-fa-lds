@@ -1,0 +1,67 @@
+ARCHIVE OF FIELD OBSERVATIONS -- BEGIN
+R0001 fulmar t-1075
+R0002 peregrine t-2810
+R0003 gannet t-4115
+R0004 martin t-9231
+R0005 kestrel t-5170
+R0006 anhinga t-7847
+R0007 swallow t-6313
+R0008 skua t-4318
+R0009 falcon t-4793
+R0010 cormorant t-4802
+R0011 condor t-7982
+R0012 harrier t-9139
+R0013 sparrow t-8340
+R0014 petrel t-1487
+R0015 eagle t-2252
+R0016 vulture t-2449
+R0017 tern t-5709
+R0018 merlin t-8539
+R0019 albatross t-3524
+R0020 osprey t-5614
+R0021 shrike t-4040
+R0022 fulmar t-8538
+R0023 peregrine t-7945
+R0024 gannet t-6924
+R0025 martin t-3219
+R0026 kestrel t-8111
+R0027 anhinga t-7564
+R0028 swallow t-9996
+R0029 skua t-6953
+R0030 falcon t-9003
+R0031 cormorant t-9716
+R0032 condor t-9920
+R0033 harrier t-1812
+R0034 sparrow t-1625
+R0035 petrel t-9412
+R0036 eagle t-9459
+R0037 vulture t-2996
+R0038 tern t-3740
+R0039 merlin t-1666
+R0040 albatross t-2945
+R0041 osprey t-6791
+R0042 shrike t-6088
+R0043 fulmar t-4503
+R0044 peregrine t-8207
+R0045 gannet t-5719
+R0046 martin t-9293
+R0047 kestrel t-2360
+R0048 anhinga t-5765
+R0049 swallow t-2248
+R0050 skua t-8205
+R0051 falcon t-4829
+R0052 cormorant t-8745
+R0053 condor t-4593
+R0054 harrier t-8988
+R0055 sparrow t-7190
+R0056 petrel t-6172
+R0057 eagle t-8223
+R0058 vulture t-3845
+R0059 tern t-9572
+R0060 merlin t-4167
+ARCHIVE OF FIELD OBSERVATIONS -- END
+
+Answer each question with ONLY the single word requested. No explanation.
+Question 1: What is the subject word of record R0030?
+Question 2: What is the subject word of record R0038?
+Question 3: What is the subject word of record R0052?

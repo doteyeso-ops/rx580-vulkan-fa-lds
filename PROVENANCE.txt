@@ -1,0 +1,28 @@
+# Provenance and environment
+
+## Base
+upstream: https://github.com/ggml-org/llama.cpp
+commit:  a25c9865fe03c954c93fd755b5d79ae86ba99750
+build:   b1530-a25c9865
+
+## Backends under test (the ONLY delta between arms)
+../stock-test/bin/ggml-vulkan.dll                      45296128 bytes  md5=9fcd08894bed
+../llama.cpp/build-vulkan/bin/ggml-vulkan.dll          45296128 bytes  md5=86e2f1b44d58
+
+## Shared binaries (verified byte-identical across arms)
+llama-cli.exe            53280113ebf8  IDENTICAL
+llama-cli-impl.dll       f8652fd913a8  IDENTICAL
+ggml.dll                 262c4245c827  IDENTICAL
+ggml-base.dll            031d2ec04ab3  IDENTICAL
+llama.dll                f06722009381  IDENTICAL
+
+## Excluded candidate (stale debug build)
+../llama-vulkan-bin/ggml-vulkan.dll                    74006528 bytes  md5=de9090e96df4
+
+## Model
+/k/llm-lowend/Qwen3.6-35B-A3B-UD-IQ3_S.gguf
+  13676723168 bytes  md5=bab30bfcc4ba5b20
+
+## Platform
+os:     MINGW64_NT-10.0-26200 3.6.7-fb42d713.x86_64 x86_64
+gpu:    Radeon RX 580 (GCN, 8GB) - Mesa RADV (open-source Vulkan)

@@ -1,0 +1,39 @@
+[gpu-lock] SELF-TEST: spawning real process named llama-bench.exe
+[gpu-lock] self-test POSITIVE ok: detector sees live probe (winpid 1727180)
+[gpu-lock] self-test NEGATIVE ok: detector goes quiet when idle
+[gpu-lock] acquired by 1722 at 11:20:54
+[gpu-lock] SELF-TEST: spawning real process named llama-bench.exe
+[gpu-lock] self-test POSITIVE ok: detector sees live probe (winpid 390740)
+[gpu-lock] self-test NEGATIVE ok: detector goes quiet when idle
+[gpu-lock] acquired by 1722 at 11:21:00
+=== TASK BENCH 2026-09-27 11:21:00 ===
+config: ngl=20 t=8 ctx=4096 ngen=48 tag=smoke pairs=4
+=== PAIR 1 ===
+--- stock: start 11:21:00
+RESULT side=stock rc=0 wall=30s load=?s pp=?ms pp_tps=55.4 gen_tps=3.9 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+--- fork: start 11:21:31
+RESULT side=fork rc=0 wall=30s load=?s pp=?ms pp_tps=59.9 gen_tps=3.5 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+=== PAIR 2 ===
+--- fork: start 11:22:01
+RESULT side=fork rc=0 wall=29s load=?s pp=?ms pp_tps=61.6 gen_tps=3.6 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+--- stock: start 11:22:31
+RESULT side=stock rc=0 wall=34s load=?s pp=?ms pp_tps=54.7 gen_tps=3.7 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+=== PAIR 3 ===
+--- stock: start 11:23:05
+RESULT side=stock rc=0 wall=30s load=?s pp=?ms pp_tps=57.0 gen_tps=4.0 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+--- fork: start 11:23:36
+RESULT side=fork rc=0 wall=28s load=?s pp=?ms pp_tps=62.0 gen_tps=3.8 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+=== PAIR 4 ===
+--- fork: start 11:24:04
+RESULT side=fork rc=0 wall=30s load=?s pp=?ms pp_tps=62.0 gen_tps=3.7 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+--- stock: start 11:24:35
+RESULT side=stock rc=0 wall=31s load=?s pp=?ms pp_tps=54.5 gen_tps=3.9 gen=?ms
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+=== TASK BENCH DONE 11:25:06 ===
