@@ -25,4 +25,23 @@ llama.dll                f06722009381  IDENTICAL
 
 ## Platform
 os:     MINGW64_NT-10.0-26200 3.6.7-fb42d713.x86_64 x86_64
-gpu:    Radeon RX 580 (GCN, 8GB) - Mesa RADV (open-source Vulkan)
+gpu:    Radeon RX 580 Series (GCN, 8GB)
+
+## Vulkan device identification (queried directly, NOT assumed)
+source: vulkaninfo, run on the benchmark host
+  deviceName                 = Radeon RX 580 Series
+  driverName                 = AMD proprietary driver
+  driverID                   = DRIVER_ID_AMD_PROPRIETARY
+  maxComputeSharedMemorySize = 32768
+
+  NOTE: an earlier version of this file claimed "Mesa RADV (open-source
+  Vulkan)" and implied 49152 bytes of shared memory. Both were wrong and were
+  never queried at the time. The driver is AMD PROPRIETARY; shared memory is
+  32768. Mesa is not involved on this machine.
+
+## Corrected interpretation of the patch
+Because driverID == eAmdProprietary on this host, the stock guard
+  (architecture == AMD_GCN) && (driver_id != eAmdProprietary)
+evaluated FALSE, so the GCN MMQ warptile tuning was SKIPPED by stock. The
+patch's second hunk REMOVES that exclusion and therefore ENABLES the tuning
+on this machine. Both hunks are operative; see FAQ_CORRECTION.md.

@@ -1,7 +1,11 @@
-# A 2-line Vulkan patch speeds up MoE prompt processing by ~11% on an RX580
+# Two changes in `ggml-vulkan.cpp` measured on a GCN card — RX 580, Windows + AMD proprietary driver
 
-**Hardware:** Radeon RX 580 (GCN, 8 GB) — Mesa **RADV**, the open-source Vulkan
-driver, not the proprietary AMD one.
+> **⚠️ Read [`FAQ_CORRECTION.md`](FAQ_CORRECTION.md) first.** The first version
+> of this file claimed the test machine ran **Mesa RADV** and that the second
+> hunk was inert. Both were wrong.
+
+**Hardware:** Radeon RX 580 (GCN, 8 GB) — **AMD proprietary driver 26.5.2**, not
+Mesa RADV.
 **Model:** Qwen3.6-35B-A3B-UD-IQ3_S.gguf (13,676,723,168 bytes, MoE, 20 layers offloaded)
 **Config:** `-ngl 20 -t 8 -c 4096`, serial runs, single model process at a time.
 
@@ -13,61 +17,71 @@ one file — `ggml/src/ggml-vulkan/ggml-vulkan.cpp`:
 ```diff
 @@ -1251 @@ get_fa_tuning_params_scalar()
 - if (device->vendor_id == VK_VENDOR_ID_AMD && device->properties.limits.maxComputeSharedMemorySize == 65536) {
-+ if (device->vendor_id == VK_VENDOR_ID_AMD && device->properties.limits.maxComputeSharedMemorySize >= 32768) {
++ if (device->vendor_id == VK_VENDOR_ID_AMD && device->properties.limits.maxComputeSharedMemorySize >= 32736) {
 
 @@ -1840 @@ ggml_vk_load_shaders()
 - if ((device->architecture == AMD_GCN) && (device->driver_id != vk::DriverId::eAmdProprietary)) {
 + if (device->architecture == AMD_GCN) {
 ```
 
-### Which hunk actually did the work
+### Which hunk actually did the work — unknown, and that is the finding
 
-Both hunks must be credited honestly, and **only one of them was operative on
-our hardware**:
+The first version claimed hunk 2 was inert because "our card runs RADV, so
+`driver != proprietary` was already true". That premise was false: the driver
+**is** proprietary, so the stock guard was **false** and the patch **enables** the
+GCN MMQ warptile tuning. **Both hunks are operative**, and the measurements
+cannot attribute the effect to either one.
 
-- **Hunk 1 (LDS threshold) — operative.** The RX580 does not report exactly
-  65536 bytes of LDS, so the stock condition was **false** and the fork condition
-  **true**. This is the hunk that changed branch outcome and is the one that
-  carries the +10.79%.
-- **Hunk 2 (driver gating) — inert here.** The stock line already read
-  `arch == GCN && driver != proprietary`, and our card runs RADV (not
-  proprietary), so that branch was **already taken** in the stock build. Removing
-  the restriction changes behaviour for **AMD-proprietary-driver** users on GCN,
-  which is not our configuration. It is included because it is part of the diff,
-  not because it contributed to this measurement.
+- **Hunk 1 (LDS threshold) — operative.** The device reports
+  `maxComputeSharedMemorySize = 32768`, which fails the old `== 65536` equality
+  and satisfies the new threshold.
+- **Hunk 2 (driver gating) — operative.** Removing the
+  `driver != eAmdProprietary` exclusion changes the branch outcome on this
+  machine, which is exactly the population the first version said it did *not*
+  affect.
 
-Reporting the second hunk as "opens the fast path to RADV" would be wrong, and a
-reviewer will check exactly that.
+Attributing the effect requires two additional single-hunk builds. That is the
+top follow-up and the main weakness of this work.
 
 ## Result
 
-| Metric | stock | fork | delta |
+| Metric | stock | patched | delta |
 |---|---|---|---|
-| **Prompt processing** | 55.40 t/s ± 0.98 | **61.38 t/s ± 0.87** | **+10.79%** |
-| **Generation** | 3.88 t/s ± 0.11 | **3.65 t/s ± 0.11** | −5.81% |
+| **Prompt processing** | 52.27 t/s ± 2.33 | **59.25 t/s ± 1.41** | **+13.36%** |
+| **Generation** | 3.37 t/s ± 0.72 | 3.60 t/s ± 0.32 | +6.93% *(not significant)* |
 
-n = 4 pairs per side, ABBA-alternating order so thermal drift cannot masquerade
-as a consistent win. All 8 arms passed the deterministic retrieval verifier 3/3.
+n = 6 pairs per side, ABBA-alternating order so thermal drift cannot masquerade
+as a consistent win. All 12 arms passed the deterministic retrieval verifier
+3/3, with no OOM and no `0.0 t/s` arm.
 
-**Prompt-processing ranges do not overlap at all:** stock `[54.5, 57.0]`,
-fork `[59.9, 62.0]`. Paired bootstrap p < 0.0001.
+**Prompt-processing ranges do not overlap at all:** stock max 55.3, patched min
+57.9 t/s. Per-pair deltas +13.31, +18.74, +15.98, +7.23, +10.02, +15.70 —
+consistent in sign across all six. Paired bootstrap +13.40%, 95% CI
+[+10.39, +16.37], P(≤0) = 0.0000.
 
-Generation moves the *other* way by a similar margin, and that is the expected
-trade: the patch buys scheduler/sharing reuse on the prompt path and gives some
-of it back per-token during decode.
+### Withdrawn: the "real generation regression"
 
-## Why this is trustworthy (the part that matters)
+The first version reported a **−5.81%** generation regression and called it
+real. With n=6 the sign flips to **+6.93%**, driven by one contaminated arm
+(arm 5 stock at 1.90 t/s against a 3.65 median). Median delta is **+0.00%**;
+dropping each side's minimum gives **+7.27%**; the paired bootstrap on generation
+has 95% CI [−0.45, +21.69], P(≤0) = 0.0522.
+
+**Generation is unchanged at this sample size.** The regression claim is
+withdrawn, and no claim is made in either direction.
+
+## Why the prompt number is trustworthy (the part that matters)
 
 An earlier measurement of an identical configuration drifted **+21.7% across
-sessions** — larger than the effect claimed here. A +10.8% number measured
-against that backdrop is meaningless. So the headline number here is not the
-+10.8%; it is this:
+sessions** — larger than the effect claimed here. A double-digit number measured
+against that backdrop is meaningless. So the headline is not the +13.36%; it is
+this:
 
 > **Null control — the same binary on both arms, 10 arms, 5 pairs.**
 > Identical code produced a **1.89% median / 3.73% p95** spurious delta,
 > max 5.50%.
 
-The real effect is **~3× the same-session noise floor** and the distributions
+The real effect is **~3.6× the same-session noise floor** and the distributions
 are fully disjoint. Cross-session drift is not a valid comparator for a
 same-session paired design; the control is.
 
@@ -93,15 +107,16 @@ a stale June debug build with a 74 MB DLL, not a valid arm.
 
 ## Honest limits
 
-- **n = 4 per side.** The effect is large relative to the null floor, but more
-  pairs would tighten it.
-- **One workload** (deterministic retrieval, 4096 ctx, 48 gen tokens). The +10.8%
-  is for *that* workload, on *that* card. It is not a general speedup claim.
+- **Two confounded hunks** — no attribution. Main weakness.
+- **n = 6 per side.** Wide CIs; generation is fragile at this size.
+- **One workload** (deterministic retrieval, 4096 ctx, 48 gen tokens), one GPU,
+  one driver, one OS. The +13.36% is for *that* configuration. It is not a
+  general speedup claim, and it is unverified on Linux, RADV, or RDNA.
+- **Prompt-heavy by construction** — a 48-token generation phase biases the
+  study toward prompt-side effects.
+- **Speed ≠ quality.** 3/3 is a pass/fail gate, not a quality comparison.
 - **`load`, `pp`, and `gen` millisecond fields logged as `?`** — this build's
-  trailer only exposes the t/s summary. Wall-clock per task was 28–34s.
-- **The −5.81% generation regression is unexplained.** It is separable from
-  noise, but I have not established the mechanism. It may be worth more work
-  than the headline result.
+  trailer only exposes the t/s summary. Wall-clock per task was 29–34s.
 
 ## What broke along the way (worth publishing too)
 
@@ -120,14 +135,19 @@ The most instructive failures were in the harness, not the patch:
    regex."
 5. **`date +%s.%N` inside `$(( ))`** — a float in integer arithmetic killed the
    first run silently, mid-script.
+6. **One output filename per side silently destroyed data.** Repeated same-side
+   arms overwrote each other; the aggregate log survived but the raw evidence
+   did not. Now archived per arm.
 
 Each fix is individually regression-tested against the real artifacts. A harness
 that reports PASS on empty output will do this again, quietly.
 
 ## Bottom line
 
-A two-line change to shared-memory-size matching and driver gating yields
-**+10.79% prompt-processing throughput** on an RX580 under RADV — roughly 3×
-the measured same-session noise floor — at a **5.8% generation cost**. Consumer
-GCN cards running Mesa were structurally excluded from the fast path; they
-don't have to be.
+Two changes to shared-memory-size matching and driver gating yield
+**+13.36% prompt-processing throughput** on an RX 580 under the AMD
+proprietary driver — roughly 3.6× the measured same-session noise floor, with
+generation unchanged. Two device gates, both conservative to the point of
+excluding a large class of consumer hardware, both now opened. But this data
+cannot say which gate did it, and the driver identification in the first version
+of this report was wrong.

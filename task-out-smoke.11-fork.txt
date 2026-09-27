@@ -1,0 +1,58 @@
+
+
+Loading model... 
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b1530-a25c9865
+model      : K:/llm-lowend/Qwen3.6-35B-A3B-UD-IQ3_S.gguf
+ftype      : IQ3_S - 3.4375 bpw
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read <file>        add a text file
+  /glob <pattern>     add text files using globbing pattern
+
+
+
+> ARCHIVE OF FIELD OBSERVATIONS -- BEGIN
+R0001 fulmar t-1075
+R0002 peregrine t-2810
+R0003 gannet t-4115
+R0004 martin t-9231
+R0005 kestrel t-5170
+R0006 anhinga t-7847
+R0007 swallow t-6313
+R0008 skua t-4318
+R0009 falcon t-4793
+R0010 cormorant t-4802
+R0011 condor t-7982
+R0012 harrier t-9139
+R0013 sparrow t-8340
+R0014 petrel t-1487
+R0015 eagle t-2252
+R0016 vulture t-2449
+R0017 tern t-5709
+R0018 merlin t-8539
+R0019 albatross t-3524
+R0020 osprey t-5614
+R0021 shrike t-4040
+R0022 fulmar t-8538
+R0023 pereg ... (truncated)
+1. falcon
+2. tern
+3. cormorant
+
+[ Prompt: 61.9 t/s | Generation: 3.7 t/s ]
+
+
+Exiting...

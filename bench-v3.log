@@ -1,0 +1,53 @@
+[gpu-lock] SELF-TEST: spawning real process named llama-bench.exe
+[gpu-lock] self-test POSITIVE ok: detector sees live probe (winpid 1123804)
+[gpu-lock] self-test NEGATIVE ok: detector goes quiet when idle
+[gpu-lock] acquired by 291 at 13:05:17
+[gpu-lock] SELF-TEST: spawning real process named llama-bench.exe
+[gpu-lock] self-test POSITIVE ok: detector sees live probe (winpid 754192)
+[gpu-lock] self-test NEGATIVE ok: detector goes quiet when idle
+[gpu-lock] acquired by 291 at 13:05:23
+=== TASK BENCH 2026-09-27 13:05:23 ===
+config: ngl=20 t=8 ctx=4096 ngen=48 tag=smoke pairs=6
+=== PAIR 1 ===
+--- stock: start 13:05:23
+RESULT side=stock arm=01 rc=0 wall=34s load=?s pp=?ms pp_tps=51.1 gen_tps=3.7 gen=?ms out=task-out-smoke.01-stock.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+--- fork: start 13:05:58
+RESULT side=fork arm=02 rc=0 wall=30s load=?s pp=?ms pp_tps=57.9 gen_tps=3.6 gen=?ms out=task-out-smoke.02-fork.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+=== PAIR 2 ===
+--- fork: start 13:06:29
+RESULT side=fork arm=03 rc=0 wall=29s load=?s pp=?ms pp_tps=58.3 gen_tps=3.6 gen=?ms out=task-out-smoke.03-fork.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+--- stock: start 13:06:59
+RESULT side=stock arm=04 rc=0 wall=34s load=?s pp=?ms pp_tps=49.1 gen_tps=3.6 gen=?ms out=task-out-smoke.04-stock.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+=== PAIR 3 ===
+--- stock: start 13:07:34
+RESULT side=stock arm=05 rc=0 wall=34s load=?s pp=?ms pp_tps=50.7 gen_tps=1.9 gen=?ms out=task-out-smoke.05-stock.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+--- fork: start 13:08:09
+RESULT side=fork arm=06 rc=0 wall=34s load=?s pp=?ms pp_tps=58.8 gen_tps=3.0 gen=?ms out=task-out-smoke.06-fork.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+=== PAIR 4 ===
+--- fork: start 13:08:44
+RESULT side=fork arm=07 rc=0 wall=29s load=?s pp=?ms pp_tps=59.3 gen_tps=3.9 gen=?ms out=task-out-smoke.07-fork.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+--- stock: start 13:09:14
+RESULT side=stock arm=08 rc=0 wall=31s load=?s pp=?ms pp_tps=55.3 gen_tps=3.6 gen=?ms out=task-out-smoke.08-stock.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+=== PAIR 5 ===
+--- stock: start 13:09:45
+RESULT side=stock arm=09 rc=0 wall=31s load=?s pp=?ms pp_tps=53.9 gen_tps=3.7 gen=?ms out=task-out-smoke.09-stock.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+--- fork: start 13:10:17
+RESULT side=fork arm=10 rc=0 wall=30s load=?s pp=?ms pp_tps=59.3 gen_tps=3.8 gen=?ms out=task-out-smoke.10-fork.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+=== PAIR 6 ===
+--- fork: start 13:10:48
+RESULT side=fork arm=11 rc=0 wall=30s load=?s pp=?ms pp_tps=61.9 gen_tps=3.7 gen=?ms out=task-out-smoke.11-fork.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=fork
+--- stock: start 13:11:18
+RESULT side=stock arm=12 rc=0 wall=30s load=?s pp=?ms pp_tps=53.5 gen_tps=3.7 gen=?ms out=task-out-smoke.12-stock.txt
+  VERDICT: PASS correct=3/3 tag=smoke side=stock
+=== TASK BENCH DONE 13:11:50 ===

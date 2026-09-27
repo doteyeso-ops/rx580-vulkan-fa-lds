@@ -25,22 +25,8 @@
 #   drift than a win in one fixed order.
 # ============================================================================
 
-# ============================================================================
-# PATHS ARE ENV-OVERRIDABLE -- set these to reproduce on your own machine:
-#
-#   HERE       repo root holding task-ctx-*.txt / task-key-*.txt
-#   MODEL      path to the GGUF
-#   STOCK_BIN  llama-cli.exe from the STOCK build   (unpatched ggml-vulkan.dll)
-#   FORK_BIN   llama-cli.exe from the FORK build    (patched   ggml-vulkan.dll)
-#   LOG        where the raw log lands (default task-bench.log)
-#
-# Only ggml-vulkan.dll must differ between the two builds. Verify with:
-#   md5sum "$(dirname $STOCK_BIN)/ggml-vulkan.dll" "$(dirname $FORK_BIN)/ggml-vulkan.dll"
-# ============================================================================
-
 set -u
-HERE="${HERE:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
-cd "$HERE" || exit 1
+cd "${BENCH_ROOT:-$(dirname "$0")}"
 export MSYS2_ARG_CONV_EXCL='*'
 
 MODEL="${MODEL:-K:/llm-lowend/Qwen3.6-35B-A3B-UD-IQ3_S.gguf}"
@@ -51,11 +37,11 @@ CTX="${CTX:-4096}"
 NGEN="${NGEN:-48}"
 PAIRS="${PAIRS:-3}"
 
-FORK_BIN="${FORK_BIN:-$HERE/llama.cpp/build-vulkan/bin/llama-cli.exe}"
-STOCK_BIN="${STOCK_BIN:-$HERE/stock-test/bin/llama-cli.exe}"
-CTXFILE="${CTXFILE:-$HERE/task-ctx-${TAG}.txt}"
+FORK_BIN="${FORK_BIN:-/c/Users/Bot/hermes-experiment/llama.cpp/build-vulkan/bin/llama-cli.exe}"
+STOCK_BIN="${STOCK_BIN:-/c/Users/Bot/hermes-experiment/stock-test/bin/llama-cli.exe}"
+CTXFILE="${BENCH_ROOT:-$(dirname "$0")}/task-ctx-${TAG}.txt"
 
-LOG="${LOG:-$HERE/task-bench.log}"
+LOG="task-bench.log"
 : > "$LOG"
 say() { echo "$*" | tee -a "$LOG"; }
 
@@ -67,11 +53,24 @@ trap 'gpu_lock_release' EXIT
 say "=== TASK BENCH $(date '+%Y-%m-%d %H:%M:%S') ==="
 say "config: ngl=$NGL t=$NTHREADS ctx=$CTX ngen=$NGEN tag=$TAG pairs=$PAIRS"
 
+# Monotonic arm counter. Repeated same-side arms used to share ONE output
+# filename, so only the LAST arm of each side survived on disk -- the v2 log
+# had valid aggregate rows but no reconstructable raw archive. Every arm now
+# gets a unique seq-tagged file, and the fixed name is kept as a copy of the
+# most recent arm so nothing that already reads it breaks.
+ARM_SEQ=0
+
 run_side () {
   # $1 = side label, $2 = binary path. Times the run, then grades it.
   local side="$1" bin="$2" t0 t1 rc verdict
+  ARM_SEQ=$(( ARM_SEQ + 1 ))
+  local seq
+  seq=$(printf '%02d' "$ARM_SEQ")
   local errf="task-${TAG}-${side}.err"
-  local outf="task-out-${TAG}.${side}.txt"
+  local outf="task-out-${TAG}.${seq}-${side}.txt"
+  # Mirror the most recent arm to the legacy fixed name the grader reads, so
+  # task-verify.py keeps working unchanged while the archive stays complete.
+  local latest="task-out-${TAG}.${side}.txt"
 
   say "--- ${side}: start $(date '+%H:%M:%S')"
   t0=$(date +%s)
@@ -118,6 +117,11 @@ run_side () {
     rc=97
   fi
 
+  # Mirror to the fixed name BEFORE grading: task-verify.py reads
+  # task-out-<tag>.<side>.txt, and grading against the archived copy is what
+  # keeps the verdict tied to THIS arm rather than a previous one.
+  if [ -f "$outf" ]; then cp -f "$outf" "$latest"; fi
+
   if [ "$rc" -eq 0 ]; then
     verdict="$(python task-verify.py "$TAG" "$side" 2>&1 | tee -a "$LOG" | grep -o 'VERDICT:.*' || echo 'VERDICT: FAIL grader-error')"
   else
@@ -153,7 +157,7 @@ run_side () {
   local gen_tps
   gen_tps=$(grep -aoiE 'Generation: *[0-9.]+ *t/s' "$outf" | tail -1 | grep -oE '[0-9.]+' | tail -1)
 
-  say "RESULT side=$side rc=$rc wall=${wall_s}s load=${load_s:-?}s pp=${pp_tg:-?}ms pp_tps=${pp_s:-?} gen_tps=${gen_tps:-?} gen=${tg_tg:-?}ms"
+  say "RESULT side=$side arm=$seq rc=$rc wall=${wall_s}s load=${load_s:-?}s pp=${pp_tg:-?}ms pp_tps=${pp_s:-?} gen_tps=${gen_tps:-?} gen=${tg_tg:-?}ms out=${outf}"
   say "  $verdict"
 }
 
