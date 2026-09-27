@@ -1,0 +1,10 @@
+# Keep the harness and the diff byte-exact across platforms.
+# CRLF in a .sh breaks it; CRLF in a .diff breaks `git apply`.
+* text=auto
+
+*.sh    text eol=lf
+*.py    text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.log   text eol=lf
+*.diff  text eol=lf
